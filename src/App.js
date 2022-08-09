@@ -14,7 +14,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} exact />
-          <Route path="/newBoard" element={<Board />} />
+          <Route path="/board/:currentSession" element={<Board />} />
         </Routes>
       </BrowserRouter>
     </div>
