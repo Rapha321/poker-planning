@@ -14,15 +14,10 @@ export default function Home() {
     let navigate = useNavigate();
 
  
-    const cookies = new Cookies();
-    cookies.set('userCookie', { path: '/' });
-    console.log("COOKIE: ", cookies.get('userCookie')); 
-
-
     useEffect(() => {
-      const boards = JSON.parse(localStorage.getItem("user"));
+      const users = JSON.parse(localStorage.getItem("user"));
       if (user === "" && score === 0) {
-        setBoard( prev => ({...prev, ...boards}));
+        setBoard( prev => ({...prev, ...users}));
       }
       
     }, []);

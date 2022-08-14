@@ -31,6 +31,9 @@ export default function Header() {
   }, [user, board]);
 
 
+  console.log("Board: ", board);
+  
+
   const handleChange = () => {
     setBoard( prev => ({...prev, [name]: 0 }));
   }
