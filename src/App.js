@@ -6,18 +6,22 @@ import Header from './components/Header';
 import Board from './components/Board';
 import Result from './components/Result';
 import Footer from './components/Footer';
+import { BoardProvider } from './components/BoardContext';
 
 function App() {
   return (
     
-    <div className="App">
+    <BoardProvider>
+
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} exact />
           <Route path="/board/:currentSession" element={<Board />} />
         </Routes>
       </BrowserRouter>
-    </div>
+      
+    </BoardProvider>
+
   );
 }
 

@@ -1,14 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import { Button } from 'semantic-ui-react';
 import Modal from 'react-bootstrap/Modal';
+import { BoardContext } from './BoardContext';
 
 export default function Header() {
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [name, setName] = useState("");
+
+  // On utilise/set les state definir dans BoardContext.js
+  const [board, setBoard] = useContext(BoardContext)
+  const { user, score } = board;
+
+
+  useEffect(() => {
+    const boards = JSON.parse(localStorage.getItem("user"));
+    if (user === "" && score === 0) {
+      setBoard( prev => ({...prev, ...boards}));
+    }
+    
+  }, []);
+
+
+  useEffect(() => {
+    localStorage.setItem("user", JSON.stringify(board));
+  }, [user, board]);
+
+
+  const handleChange = () => {
+    setBoard( prev => ({...prev, [name]: 0 }));
+  }
 
 
   return (
@@ -28,12 +53,15 @@ export default function Header() {
             </Modal.Header>
             <Modal.Body>
                 <strong>Name: &nbsp;&nbsp; </strong> 
-                <div class="ui input"><input type="text" placeholder="Enter your name"/></div>
+                <div class="ui input">
+                  <input type="text" name="name" value={board.name} onChange={(e) => {setName(e.target.value)}} placeholder="Enter your name"/>
+                </div>
+
                 <br/><br />
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
-                Join
+              <Button color='green' onClick={ () => {handleClose(); handleChange(); console.log("header: ", board);} }>
+                Submit
               </Button>
             </Modal.Footer>
           </Modal>
@@ -42,6 +70,7 @@ export default function Header() {
       </Navbar>
     </>
   );
+
 }
 
 
