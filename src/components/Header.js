@@ -1,41 +1,47 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate, useParams } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import { Button } from 'semantic-ui-react';
 import Modal from 'react-bootstrap/Modal';
-import { BoardContext } from './BoardContext';
+import { db } from '../firebase-config';
+import { addDoc, collection, getDocs } from 'firebase/firestore';
+
+
 
 export default function Header() {
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [name, setName] = useState("");
+  const [ users, setUsers ] = useState([]);
+  const usersCollectionRef = collection(db, "users");
+  const [ newName, setNewName ] = useState("");
+  const [ newScore, setNewScore ] = useState(0);
 
-  // On utilise/set les state definir dans BoardContext.js
-  const [board, setBoard] = useContext(BoardContext)
-  const { user, score } = board;
+  let { currentSession } = useParams();
+
+
+
+  // const handleChange = () => {
+  //   setBoard( prev => ({...prev, [name]: 0 }));
+  // }
+
+
 
 
   useEffect(() => {
-    const boards = JSON.parse(localStorage.getItem("user"));
-    if (user === "" && score === 0) {
-      setBoard( prev => ({...prev, ...boards}));
+    const getUsers = async () => {
+      const data = await getDocs(usersCollectionRef);
+      setUsers(data.docs.map((doc) => ({...doc.data(), boardId: currentSession})));
     }
-    
-  }, []);
+
+    getUsers();
+  }, [])
 
 
-  useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(board));
-  }, [user, board]);
-
-
-  console.log("Board: ", board);
-  
-
-  const handleChange = () => {
-    setBoard( prev => ({...prev, [name]: 0 }));
+  const createUser = async () => {
+    await addDoc(usersCollectionRef, { boardId: currentSession, userName: newName, score: newScore});
   }
 
 
@@ -57,13 +63,13 @@ export default function Header() {
             <Modal.Body>
                 <strong>Name: &nbsp;&nbsp; </strong> 
                 <div class="ui input">
-                  <input type="text" name="name" value={board.name} onChange={(e) => {setName(e.target.value)}} placeholder="Enter your name"/>
+                  <input type="text" onChange={(e) => {setNewName(e.target.value)}} placeholder="Enter your name"/>
                 </div>
 
                 <br/><br />
             </Modal.Body>
             <Modal.Footer>
-              <Button color='green' onClick={ () => {handleClose(); handleChange(); console.log("header: ", board);} }>
+              <Button color='green' onClick={ () => {handleClose(); createUser(); } }>
                 Submit
               </Button>
             </Modal.Footer>
